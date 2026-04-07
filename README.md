@@ -18,7 +18,10 @@ storage_name  = "Local storage"
 
 # User Setup
 vm_user        = "user"
-ssh_public_key_path = "~/.ssh/id_ed25519.pub"
+ssh_public_key_paths = [
+  "~/.ssh/id_ed25519.pub",
+  "~/.ssh/stefan_ubuntu.pub",
+]
 
 # Ressourcen
 vm_memory_gb = 0.5

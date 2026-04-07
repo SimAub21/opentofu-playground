@@ -35,7 +35,7 @@ resource "xenorchestra_cloud_config" "ubuntu_config" {
   name = "ubuntu-cloud-init"
   template = templatefile("${path.module}/cloud_config.yaml", {
     username = var.vm_user
-    ssh_key  = file(var.ssh_public_key_path)
+    ssh_keys = [for p in var.ssh_public_key_paths : trimspace(file(pathexpand(p)))]
   })
 }
 

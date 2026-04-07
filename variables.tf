@@ -14,7 +14,11 @@ variable "vm_user" {
     type = string
     default = "user" 
 }
-variable "ssh_public_key_path" { type = string }
+
+variable "ssh_public_key_paths" {
+  type    = list(string)
+  description = "list of public ssh keys added to the server"
+}
 
 variable "vm_memory_gb" {
     type = number
