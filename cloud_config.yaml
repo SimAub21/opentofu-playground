@@ -10,9 +10,9 @@ users:
 
 # Optional: Pakete direkt beim Booten installieren
 packages:
-  - qemu-guest-agent
+  - xe-guest-utilities
   - htop
   - curl
 
 runcmd:
-  - [ systemctl, enable, --now, qemu-guest-agent ]
+  - [systemctl, enable, --now, xe-guest-utilities]
