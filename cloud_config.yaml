@@ -1,4 +1,11 @@
 #cloud-config
+hostname: ${vm_hostname}
+
+ssh_authorized_keys:
+%{ for key in ssh_keys ~}
+      - ${key}
+%{ endfor ~}
+
 users:
   - name: ${username}
     sudo: ALL=(ALL) NOPASSWD:ALL
@@ -9,10 +16,10 @@ users:
 %{ endfor ~}
 
 # Optional: Pakete direkt beim Booten installieren
-packages:
-  - xe-guest-utilities
-  - htop
-  - curl
+# packages:
+#   - xe-guest-utilities
+#   - htop
+#   - curl
 
-runcmd:
-  - [systemctl, enable, --now, xe-guest-utilities]
+# runcmd:
+#   - [systemctl, enable, --now, xe-guest-utilities]

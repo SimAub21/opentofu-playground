@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     xenorchestra = {
-      source = "terra-farm/xenorchestra"
+      source = "vatesfr/xenorchestra"
     }
   }
 }
@@ -32,8 +32,10 @@ data "xenorchestra_sr" "storage" {
 
 # Cloud-Init Konfiguration aus externer Datei laden
 resource "xenorchestra_cloud_config" "ubuntu_config" {
+  count = 3
   name = "ubuntu-cloud-init"
   template = templatefile("${path.module}/cloud_config.yaml", {
+    vm_hostname = "${var.vm_hostname}-${count.index + 1}"
     username = var.vm_user
     ssh_keys = [for p in var.ssh_public_key_paths : trimspace(file(pathexpand(p)))]
   })
@@ -42,9 +44,10 @@ resource "xenorchestra_cloud_config" "ubuntu_config" {
 # Die 3 Virtual Machines erstellen
 resource "xenorchestra_vm" "ubuntu_vms" {
   count      = 3
-  name_label = "ubuntu-node-${count.index + 1}"
+  name_label = "${var.vm_hostname}-${count.index + 1}"
   template   = data.xenorchestra_template.ubuntu_template.id
-  
+
+  hvm_boot_firmware = "uefi"  
   cpus       = 2
   memory_max = var.vm_memory_gb * 1024 * 1024 * 1024
   
@@ -54,11 +57,17 @@ resource "xenorchestra_vm" "ubuntu_vms" {
 
   disk {
     sr_id      = data.xenorchestra_sr.storage.id
-    name_label = "ubuntu-node-${count.index + 1}-disk"
+    name_label = "${var.vm_hostname}-${count.index + 1}-os-disk"
     size       = var.vm_disk_gb * 1024 * 1024 * 1024
   }
 
-  cloud_config = xenorchestra_cloud_config.ubuntu_config.template
+  disk {
+    sr_id      = data.xenorchestra_sr.storage.id
+    name_label = "ubuntu-node-${count.index + 1}-ceph-disk"
+    size       = 5 * 1024 * 1024 * 1024
+  }
+
+  cloud_config = xenorchestra_cloud_config.ubuntu_config[count.index].template
 }
 
 # Ausgabe der IP-Adressen für Ansible

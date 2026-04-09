@@ -10,6 +10,8 @@ variable "template_name" { type = string }
 variable "network_name" { type = string }
 variable "storage_name" { type = string }
 
+variable "vm_hostname" { type = string }
+
 variable "vm_user" {
     type = string
     default = "user" 
